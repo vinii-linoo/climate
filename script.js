@@ -55,24 +55,25 @@ function detectaVoz() {
 }
 
 async function sugestaoRoupa() {
-let resposta = await fetch("/api/groq", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ temperatura, umidade, cidade })
-});
+    const tempEl = document.querySelector(".temp");
+    const umidadeEl = document.querySelector(".umidade");
+    const cidadeEl = document.querySelector(".cidade");
 
-let dados = await resposta.json(); // <-- aqui você pega o JSON
+    if (!tempEl || !umidadeEl || !cidadeEl) {
+        alert("Dados da cidade ainda não carregados. Clique em Buscar primeiro!");
+        return;
+    }
 
-console.log(dados);
+    let temperatura = parseInt(tempEl.textContent);
+    let umidade = parseInt(umidadeEl.textContent.replace("Umidade: ", "").replace("%", ""));
+    let cidade = cidadeEl.textContent;
 
-let texto = dados.resposta;
+    let resposta = await fetch("/api/groq", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ temperatura, umidade, cidade })
+    });
 
-// Colocar na tela, por exemplo:
-document.querySelector(".resposta-ia").textContent = texto;
-
-return texto;
+    let dados = await resposta.json();
+    document.querySelector(".resposta-ia").textContent = dados.resposta;
 }
-
-
-
-
