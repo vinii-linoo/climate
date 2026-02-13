@@ -20,17 +20,13 @@
       [x] Pegar a resposta da IA e colocar na tela
 */
 
-const chaveIA = window.API_Key_IA
 
 
 async function buscar() {
     let cidade = document.querySelector(".input-cidade").value;
     let caixa = document.querySelector(".caixa-media")
-    const chave = API_Key_1
-    let endereco = fetch(`/api/weather?city=${cidade}`)
-
     
-    let respostaServidor = await fetch(endereco)
+    let respostaServidor = await fetch(`/api/weather?city=${cidade}`)
     let dadosJson = await respostaServidor.json()
 
     caixa.innerHTML = `
@@ -59,32 +55,24 @@ function detectaVoz() {
 }
 
 async function sugestaoRoupa() {
-    let temperatura = document.querySelector(".temp").textContent;
-    let umidade = document.querySelector(".umidade").textContent;
-    let cidade = document.querySelector(".cidade").textContent;
+let resposta = await fetch("/api/groq", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ temperatura, umidade, cidade })
+});
 
-    let resposta = await fetch("/api/groq", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            temperatura,
-            umidade,
-            cidade
-        })
-    });
+let dados = await resposta.json(); // <-- aqui você pega o JSON
 
-    
+console.log(dados);
 
-    console.log(dados);
+let texto = dados.resposta;
 
-    let texto = dados.resposta;
-    return texto;
+// Colocar na tela, por exemplo:
+document.querySelector(".resposta-ia").textContent = texto;
+
+return texto;
 }
 
 
-    let dados = await resposta.json()
-    document.querySelector(".resposta-ia").innerHTML = dados.choices[0].message.content
-    console.log(dados)
+
 
